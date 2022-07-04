@@ -58,7 +58,7 @@ code {
   padding: 2% !important;
   border: 3px solid rgba(45, 98, 89, 0.297);
   border-radius: 10px;
-  max-width: 700px !important;
+  max-width: 1000px !important;
 }
 /*root #fff9e7*/
 .css-8apw0y {
@@ -67,7 +67,7 @@ code {
 
 /* card */
 .MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation1.MuiCard-root {
-  margin: 15% !important;
+  margin: 3% !important;
   margin-bottom: 20px !important; 
   margin-top: 20px !important; 
 }

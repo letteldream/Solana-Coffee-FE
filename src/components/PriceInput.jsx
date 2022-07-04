@@ -6,7 +6,7 @@ const SolInput = styled("input")({
   fontSize: 24,
   fontWeight: 500,
   padding: "12px 90px 12px 16px",
-  textAlign: "right",
+  textAlign: "center",
   borderRadius: 0,
   border: "1px solid #555",
   background: "white",
@@ -33,7 +33,7 @@ export default function PriceInput({ value, max, onChange = () => {} }) {
         fontSize={24}
         position="absolute"
         top={9}
-        right={18}
+        right={1}
         fontWeight={500}
         color="black"
       >
