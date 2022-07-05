@@ -1,75 +1,162 @@
 import { flexbox, styled, Box } from "@mui/system";
-
-import Header from "./components/Header";
-import BakeCard from "./components/BakeCard";
-import NutritionFacts from "./components/NutritionFacts";
-import ReferralLink from "./components/ReferralLink";
-import { useWallet } from "@solana/wallet-adapter-react";
-import Footer from "./components/Footer";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-} from '@material-ui/core';
-import {
-  WalletDialogProvider as MaterialUIWalletDialogProvider,
-  WalletMultiButton as MaterialUIWalletMultiButton,
-  WalletConnectButton
-} from '@solana/wallet-adapter-material-ui';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
-
-import backgroundImg from './assets/background.png';
-
-const Wrapper = styled("div")(({ theme }) => ({
-  position: 'relative',
-  maxWidth: 500,
-  margin: "0 auto",
-  [theme.breakpoints.down("sm")]: {
-    maxWidth: "100%",
-  },
+import { Table, TableBody, TableCell, TableRow } from "@material-ui/core";
+import logo from "./assets/Logo.png";
+import bnb from "./assets/BNB.png";
+import eth from "./assets/Eth.png";
+import sol from "./assets/SOL.png";
+import ellipse from "./assets/Ellipse.png";
+import discord from "./assets/Discord.png";
+import twitter from "./assets/Twitter.png";
+import telegram from "./assets/Telegram.png";
+import instagram from "./assets/Instagram.png";
+import backgroundImg from "./assets/background.png";
+import { Grid, Typography, Link, useMediaQuery } from "@mui/material";
+import "./index.css";
+import React from "react";
+const UnderlinedGrid = styled(Grid)(() => ({
+  borderBottom: "3px solid white",
 }));
 
-const WalletButton = styled("div")(() => ({
-  display: 'flex',
-  flexDirection: 'row-reverse'
-}))
-
-export default function OldHome() {
-  //const { address } = useAuthContext();
-  const wallet = useWallet();
-
+export default function Home() {
+  const desktop = useMediaQuery("(min-width: 768px)");
   return (
-    <Box sx={{backgroundImage: `url(${backgroundImg})`, backgroundSize:"cover"}}>
-      <Wrapper>
-          <WalletButton>
-            <MaterialUIWalletMultiButton variant="text" style={{
-              border: "5px solid black",
-              fontWeight: 900,
-              background: "transparent",
-              borderRadius: '10px',
-              color: 'black'
-            }}/>
-          </WalletButton>
-          <Header />
-          <BakeCard />
-          <NutritionFacts />
-          <ReferralLink address={wallet.publicKey && wallet.publicKey.toBase58()} />
-          <Footer />
-          <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-          />
-      </Wrapper>
-    </Box>
+    <>
+      <Box
+        sx={{
+          width: "100%",
+          height: "100vh",
+          backgroundImage: `url(${backgroundImg})`,
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+          padding: "0px",
+        }}
+      >
+        <Box sx={{ display: "flex", justifyContent: "end" }}>
+          <img src={discord} className="header-img" alt="" />
+          <img src={twitter} className="header-img" alt="" />
+          <img src={telegram} className="header-img" alt="" />
+          <img src={instagram} className="header-img" alt="" />
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <img src={logo} alt="" className="logo" />
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <UnderlinedGrid
+            container
+            justifyContent="center"
+            width="100%"
+            border="2px"
+            mt={3}
+          >
+            <Typography variant="h5" fontSize="40px" color="#FFC104">
+              COFFEE BEAN
+            </Typography>
+            <Typography variant="h5" fontSize="40px" color="black">
+              &nbsp;&nbsp;FLIP
+            </Typography>
+          </UnderlinedGrid>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <Typography
+            className="sub-title"
+            textAlign="center"
+            color="white"
+            marginTop="10px"
+          >
+            SELECT YOUR COIN
+            <br /> TO ENTER THE DAPP
+          </Typography>
+        </Box>
+        {desktop ? (
+          <Box className="card-box">
+            <Box className="coin">
+              <Link href="/evm/binance">
+                <img src={bnb} alt="" width={"60%"} />
+              </Link>
+              <Typography width="60%" textAlign="center" color="white">
+                BNB
+              </Typography>
+            </Box>
+
+            <Box className="coin">
+              <Link href="/evm/binance">
+                <img src={eth} alt="" width={"60%"} />
+              </Link>
+              <Typography width="60%" textAlign="center" color="white">
+                ETHERUM
+              </Typography>
+            </Box>
+            <Box className="coin">
+              <Link href="/solana">
+                <img src={sol} alt="" width={"60%"} />
+              </Link>
+              <Typography width="60%" textAlign="center" color="white">
+                SOLANA
+              </Typography>
+            </Box>
+          </Box>
+        ) : (
+          <Box>
+            <Box className="card-box">
+              <Box className="coin coin-card">
+                <Link href="/evm/binance">
+                  <img
+                    src={bnb}
+                    alt=""
+                    width={"60%"}
+                    className="img-location"
+                  />
+                </Link>
+                <Typography width="100%" textAlign="center" color="white">
+                  BNB
+                </Typography>
+              </Box>
+
+              <Box className="coin coin-card">
+                <Link href="/evm/ethereum">
+                  <img
+                    src={eth}
+                    alt=""
+                    width={"60%"}
+                    className="img-location"
+                  />
+                </Link>
+                <Typography width="100%" textAlign="center" color="white">
+                  ETHERUM
+                </Typography>
+              </Box>
+            </Box>
+            <Box className="card-box">
+              <Box className="coin coin-card">
+                <Link href="/solana">
+                  <img
+                    src={sol}
+                    alt=""
+                    width={"60%"}
+                    className="img-location"
+                  />
+                </Link>
+                <Typography width="100%" textAlign="center" color="white">
+                  SOLANA
+                </Typography>
+              </Box>
+              <Box className="coin coin-card">
+                <Link href="#">
+                  <img
+                    src={ellipse}
+                    alt=""
+                    width={"60%"}
+                    className="img-location"
+                  />
+                </Link>
+                <Typography width="100%" textAlign="center" color="white">
+                  COMING SOON
+                </Typography>
+              </Box>
+            </Box>
+          </Box>
+        )}
+      </Box>
+    </>
   );
 }

@@ -1,27 +1,26 @@
 import { useMemo } from "react";
 import Box from "@mui/material/Box";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import MainSolana from "./MainSolana";
+import MainEVM from "./MainEVM";
 import Home from "./Home";
-import NewHome from "./NewHome";
-import Home1 from "./Home1";
-import { Wallets } from './components/wallet'
+import { Wallets } from "./components/wallet";
 
-import { SnackbarProvider } from 'notistack';
+import { SnackbarProvider } from "notistack";
 
 function App() {
-
-// I will try to start with new project
-// this project is so stressful
+  // I will try to start with new project
+  // this project is so stressful
   return (
     <BrowserRouter>
       <Box>
         <SnackbarProvider>
           <Wallets>
-          <Routes>
-            <Route path="/" element={<Home1 />} />
-            <Route path="/oldHome" element={<Home />} />
-            <Route path="/newHome" element={<NewHome />} />
-          </Routes>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/evm/:chain" element={<MainEVM />} />
+              <Route path="/solana" element={<MainSolana />} />
+            </Routes>
           </Wallets>
         </SnackbarProvider>
       </Box>
