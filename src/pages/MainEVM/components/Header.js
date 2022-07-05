@@ -36,7 +36,7 @@ export default function Header() {
         container
         justifyContent="center"
         width="50%"
-        textDecorationColor="#FFC104"
+        textdecorationcolor="#FFC104"
         
         mt={3}
       >

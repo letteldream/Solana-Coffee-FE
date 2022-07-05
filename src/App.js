@@ -3,9 +3,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import { SnackbarProvider } from "notistack";
 import { SolanaWallets } from "./components/SolanaWallets";
-// import MainSolana from "./pages/MainSolana";
-// import MainEVM from "./pages/MainEVM";
-// import Home from "./pages/Home";
 
 const routes = [
   { path: "/", component: lazy(() => import("./pages/Home")) },
@@ -20,21 +17,19 @@ function App() {
   return (
     <BrowserRouter>
       <SnackbarProvider>
-        <SolanaWallets>
-          <Suspense fallback={<div />}>
-            <Routes>
-              {routes.map(({ component, path }, i) => {
-                const PageComponent = component;
-                return (
-                  <Route key={i} path={path} element={<PageComponent />} />
-                );
-              })}
-              {/* <Route path="/" element={<Home />} />
+        {/* <SolanaWallets> */}
+        <Suspense fallback={<div />}>
+          <Routes>
+            {routes.map(({ component, path }, i) => {
+              const PageComponent = component;
+              return <Route key={i} path={path} element={<PageComponent />} />;
+            })}
+            {/* <Route path="/" element={<Home />} />
               <Route path="/evm/:chain" element={<MainEVM />} />
               <Route path="/solana" element={<MainSolana />} /> */}
-            </Routes>
-          </Suspense>
-        </SolanaWallets>
+          </Routes>
+        </Suspense>
+        {/* </SolanaWallets> */}
       </SnackbarProvider>
     </BrowserRouter>
   );
