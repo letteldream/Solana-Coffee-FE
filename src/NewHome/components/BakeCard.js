@@ -10,6 +10,7 @@ import Divider from "@mui/material/Divider";
 import { styled } from "@mui/system";
 import { PublicKey } from "@solana/web3.js";
 import { useLocation } from "react-router-dom";
+import { useMediaQuery } from "@mui/material";
 import { useContractContext } from "../../providers/ContractProvider";
 import { useWallet } from "@solana/wallet-adapter-react";
 import PriceInput from "../../components/PriceInput";
@@ -150,7 +151,7 @@ export default function BakeCard() {
     toggleDataUpdate();
 
   };
-
+  const desktop = useMediaQuery("(min-width: 1024px)");
   const eatBeans = async () => {
     setLoading(true);
 
@@ -164,8 +165,8 @@ export default function BakeCard() {
   };
 
   return (
-    <Box fullWidth sx={{ display: "flex" }}>
-      <CardWrapper sx={{ width: "55%" }}>
+    <Box fullWidth sx={{ display: desktop?"flex":"block" }}>
+      <CardWrapper sx={{ width: desktop?"55%":"95%" }}>
         {loading && <LinearProgress color="secondary" />}
         <CardContent>
           <UnderlinedGrid
@@ -270,7 +271,7 @@ export default function BakeCard() {
           </Box>
         </CardContent>
       </CardWrapper>
-      <CardWrapper sx={{ width: "45%" }}>
+      <CardWrapper sx={{ width: desktop?"45%":"95%" }}>
         {loading && <LinearProgress color="secondary" />}
         <CardContent>
           <UnderlinedGrid

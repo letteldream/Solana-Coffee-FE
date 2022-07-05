@@ -4,6 +4,7 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import { Button } from "@mui/material";
 import Typography from "@mui/material/Typography";
+import {useMediaQuery} from "@mui/material";
 
 import { styled } from "@mui/system";
 
@@ -29,9 +30,10 @@ const nutritionFacts = [
 ];
 
 export default function NutritionFacts() {
+  const desktop = useMediaQuery("(min-width: 1024px)");
   return (
-    <Box sx={{display:"flex"}}>
-    <CardWrapper sx={{ width: "55%" }}>
+    <Box sx={{display:desktop?"flex":"block"}}>
+    <CardWrapper sx={{ width: desktop?"55%":"95%" }}>
       <CardContent className="fact">
         <Typography variant="h5" borderBottom="6px solid" paddingBottom={1} >
           Caffeine Facts
@@ -52,7 +54,7 @@ export default function NutritionFacts() {
         </Box>
       </CardContent>
     </CardWrapper>
-    <CardWrapper sx={{ width: "45%" }}>
+    <CardWrapper sx={{ width: desktop?"45%":"95%" }}>
         <CardContent>
           <Box position="relative" sx={{display:"flex", justifyContent:"space-around", outline:"black", border:"2px solid"}} >
             <Typography>Result:</Typography>
