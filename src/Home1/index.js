@@ -61,7 +61,7 @@ export default function Home1() {
         </Box>
         {desktop ?
           <Box className="card-box">
-            <Box className="coin" sx={{ marginLeft: "90px" }}>
+            <Box className="coin">
               <Link href="/oldHome"><img src={bnb} alt="" width={"60%"} /></Link>
               <Typography width="60%" textAlign="center" color="white">BNB</Typography>
             </Box>

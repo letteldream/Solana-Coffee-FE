@@ -50,7 +50,7 @@
 
     .coin{
         width:"50%";
-        margin-left: 90px;
+        margin-left: 20px;
     }
 
     .coin-card{
@@ -61,8 +61,8 @@
     }
 
     .img-location{
-        margin-left:55px;
-        margin-top: 30px;
+        margin-left:20%;
+        margin-top: 50px;
         z-index: 10000;
     }
 }
