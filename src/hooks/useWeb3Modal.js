@@ -35,6 +35,7 @@ export default function useWeb3Modal() {
   const [network, setNetwork] = useState();
 
   const connectWallet = async () => {
+    console.log("123");
     try {
       const provider = await web3Modal.connect();
       console.log("provider", provider);
