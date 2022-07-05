@@ -37,7 +37,7 @@ const WalletButton = styled("div")(() => ({
   flexDirection: 'row-reverse'
 }))
 
-export default function Home() {
+export default function OldHome() {
   //const { address } = useAuthContext();
   const wallet = useWallet();
 

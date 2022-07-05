@@ -1,6 +1,6 @@
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/system";
-import logo from "../../assets/FullLogo.png";
+import logo from "../../assets/FullLogo1.png";
 
 const Wrapper = styled("div")(({ theme }) => ({
   textAlign: "center",
