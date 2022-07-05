@@ -14,7 +14,6 @@ import { useContractContext } from "../../../providers/ContractProvider";
 import { useWallet } from "@solana/wallet-adapter-react";
 import PriceInput from "../../../components/PriceInput";
 import { useEffect, useState } from "react";
-import { config } from "../../../config";
 import {
   buyEggs,
   sellEggs,

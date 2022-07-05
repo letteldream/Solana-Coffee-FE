@@ -1,6 +1,5 @@
 import Grid from "@mui/material/Grid";
 
-import { config } from "../../../config";
 import solIcon from "../assets/SOLIcon.png";
 import tgIcon from "../assets/TGIcon.png";
 import twIcon from "../assets/TWIcon.png";

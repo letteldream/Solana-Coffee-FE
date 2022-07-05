@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import CardContent from "@mui/material/CardContent";
 import Card from "@mui/material/Card";
 import Grid from "@mui/material/Grid";
@@ -8,27 +7,15 @@ import Button from "@mui/material/Button";
 import LinearProgress from "@mui/material/LinearProgress";
 import Divider from "@mui/material/Divider";
 import { styled } from "@mui/system";
-import { PublicKey } from "@solana/web3.js";
-import { useLocation } from "react-router-dom";
 import { useMediaQuery } from "@mui/material";
-import { useContractContext } from "../../../providers/ContractProvider";
-import { useWallet } from "@solana/wallet-adapter-react";
+import useWeb3Modal from "../../../hooks/useWeb3Modal";
 import PriceInput from "../../../components/PriceInput";
-import { useEffect, useState } from "react";
-import { config } from "../../../config";
-import {
-  buyEggs,
-  sellEggs,
-  hatchEggs,
-  initialize,
-} from "../../../contracts/bean";
-
-import {
-  getWalletSolBalance,
-  getVaultSolBalance,
-  getUserData,
-  getGlobalStateData,
-} from "../../../contracts/bean";
+import { useEffect, useMemo, useState } from "react";
+import Web3 from "web3";
+import BEAN_FLIP_ABI from "../../../abi/CoffeeBeanFlip.json";
+import { BEAN_FLIP_ADDRESS } from "../../../config";
+import { ethers } from "ethers";
+import { trim } from "../../../utils";
 
 const CardWrapper = styled(Card)({
   background: "transparent",
@@ -50,121 +37,107 @@ const UnderlinedGrid = styled(Grid)(() => ({
   borderBottom: "1px solid black",
 }));
 
-export default function BakeCard() {
-  function useQuery() {
-    return new URLSearchParams(useLocation().search);
-  }
-  /*const { address, chainId } = useAuthContext();*/
-  const { publicKey: address } = useWallet();
-  const [bakeSOL, setBakeSOL] = useState(0);
+export default function BakeCard({ token, chainId, referralAddr }) {
+  const { account, library } = useWeb3Modal();
   const [loading, setLoading] = useState(false);
-  const query = useQuery();
-  const wallet = useWallet();
-
-  const [minersCount, setMinersCount] = useState("0");
-  const [beanRewards, setBeanRewards] = useState("0");
-  const [walletSolBalance, setWalletSolBalance] = useState("0");
-  const [contractSolBalance, setContractSolBalance] = useState("0");
-  const [dataUpdate, setDataUpdate] = useState(false);
-  const [adminKey, setAdminKey] = useState(null);
-
-  useEffect(() => {
-    getWalletSolBalance(wallet).then((bal) => {
-      console.log("getWalletSolBalance bal=", bal);
-      setWalletSolBalance(bal);
-    });
-    getUserData(wallet).then((data) => {
-      if (data !== null) {
-        console.log("userData =", data);
-        setBeanRewards(data.beanRewards);
-        setMinersCount(data.miners);
-      } else {
-        setBeanRewards("0");
-        setMinersCount("0");
-      }
-    });
-    getGlobalStateData(wallet).then((data) => {
-      if (data != null) {
-        setAdminKey(data.authority);
-      }
-    });
-  }, [wallet, dataUpdate]);
-
-  useEffect(() => {
-    getVaultSolBalance(wallet).then((bal) => {
-      setContractSolBalance(bal);
-    });
-  }, [wallet, dataUpdate]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (wallet.publicKey) toggleDataUpdate();
-    }, 5000);
-  });
-
-  const toggleDataUpdate = () => {
-    setDataUpdate(!dataUpdate);
-  };
-
-  const onUpdateBakeSOL = (value) => {
-    setBakeSOL(value);
-  };
-  const getRef = () => {
-    const ref = query.get("ref");
-    return ref;
-  };
-
-  const initializeProgram = async () => {
-    setLoading(true);
-    try {
-      await initialize(wallet);
-    } catch (err) {
-      console.error(err);
-    }
-    setLoading(false);
-    toggleDataUpdate();
-  };
-
-  const bake = async () => {
-    setLoading(true);
-
-    let ref = getRef();
-    console.log("bake: ref=", ref);
-    if (ref === null) ref = "9u9MPVF8eaF1aZay3fAHfXvKkAjmjVo4BJ7gK6tPqNfe";
-    try {
-      await buyEggs(wallet, new PublicKey(ref), bakeSOL);
-    } catch (err) {
-      console.error(err);
-    }
-    setLoading(false);
-    toggleDataUpdate();
-  };
-
-  const reBake = async () => {
-    setLoading(true);
-
-    let ref = getRef();
-
-    if (ref === null) ref = "9u9MPVF8eaF1aZay3fAHfXvKkAjmjVo4BJ7gK6tPqNfe";
-    try {
-      await hatchEggs(wallet, new PublicKey(ref));
-    } catch (err) {
-      console.error(err);
-    }
-    setLoading(false);
-    toggleDataUpdate();
-  };
   const desktop = useMediaQuery("(min-width: 1024px)");
-  const eatBeans = async () => {
-    setLoading(true);
 
-    try {
-      await sellEggs(wallet);
-    } catch (err) {
-      console.error(err);
+  // Get contract
+  const BeanFlipContract = useMemo(() => {
+    const web3 = new Web3(Web3.givenProvider);
+    return new web3.eth.Contract(BEAN_FLIP_ABI, BEAN_FLIP_ADDRESS[chainId]);
+  }, [chainId]);
+  // State Variable
+  const [contractTokenBalance, setContractTokenBalance] = useState(0);
+  const [userTokenBalance, setUserTokenBalance] = useState(0);
+  const [userBeanBalance, setUserBeanBalance] = useState(0);
+  const [inputBeanValue, setInputBeanValue] = useState(0);
+  const [userBeanReward, setUserBeanReward] = useState(0);
+
+  useEffect(() => {
+    if (account && library && BeanFlipContract) {
+      const getInfo = async () => {
+        // Get contract balance
+        const _contractTokenBalance = await BeanFlipContract.methods
+          .getBalance()
+          .call();
+        console.log("_contractTokenBalance", _contractTokenBalance);
+        setContractTokenBalance(
+          +ethers.utils.formatEther(_contractTokenBalance)
+        );
+        // Get user balance
+        const _balance = await library.getBalance(account.toLowerCase());
+        console.log("_balance", _balance);
+        setUserTokenBalance(+ethers.utils.formatEther(_balance));
+        // Get user balance
+        const _beanBalance = await BeanFlipContract.methods
+          .getMyBeans(account)
+          .call();
+        setUserBeanBalance(+_beanBalance);
+        // Get user reward
+        const _beanReward = await BeanFlipContract.methods
+          .beanRewards(account)
+          .call();
+        setUserBeanReward(+_beanReward);
+      };
+      getInfo();
     }
-    setLoading(false);
-    toggleDataUpdate();
+  }, [account, library, BeanFlipContract]);
+
+  const buyBeans = async () => {
+    if (BeanFlipContract && inputBeanValue > 0) {
+      const addr = referralAddr === "" ? account : referralAddr;
+      try {
+        setLoading(true);
+
+        await BeanFlipContract.methods.buyBeans(addr).send({
+          value: ethers.utils.parseEther(inputBeanValue),
+          from: account,
+        });
+        setLoading(false);
+      } catch (err) {
+        console.log("err", err);
+      }
+    }
+  };
+
+  const roastBeans = async () => {
+    if (BeanFlipContract) {
+      const addr = referralAddr === "" ? account : referralAddr;
+      try {
+        setLoading(true);
+        await BeanFlipContract.methods.roastBeans(addr).send({ from: account });
+
+        setLoading(false);
+      } catch (err) {
+        console.log("err", err);
+      }
+    }
+  };
+
+  const sellBeans = async () => {
+    if (BeanFlipContract) {
+      try {
+        setLoading(false);
+
+        await BeanFlipContract.methods.sellBeans().send({ from: account });
+      } catch (err) {
+        console.log("err", err);
+      }
+    }
+  };
+
+  const flipBeans = async (shot) => {
+    if (BeanFlipContract) {
+      try {
+        setLoading(true);
+        await BeanFlipContract.methods.flipBeans(shot).send({ from: account });
+
+        setLoading(false);
+      } catch (err) {
+        console.log("err", err);
+      }
+    }
   };
 
   return (
@@ -179,7 +152,10 @@ export default function BakeCard() {
             mt={3}
           >
             <Typography variant="body1">Contract</Typography>
-            <Typography variant="h5">{contractSolBalance} SOL</Typography>
+            <Typography variant="h5">
+              {contractTokenBalance}
+              {token}
+            </Typography>
           </UnderlinedGrid>
           <UnderlinedGrid
             container
@@ -187,8 +163,11 @@ export default function BakeCard() {
             alignItems="center"
             mt={3}
           >
-            <Typography variant="body1">Wallet</Typography>
-            <Typography variant="h5">{walletSolBalance} SOL</Typography>
+            <Typography variant="body1">account</Typography>
+            <Typography variant="h5">
+              {trim(userTokenBalance)}
+              {token}
+            </Typography>
           </UnderlinedGrid>
           <UnderlinedGrid
             container
@@ -197,38 +176,38 @@ export default function BakeCard() {
             mt={3}
           >
             <Typography variant="body1">Your Beans</Typography>
-            <Typography variant="h5">{minersCount} BEANS</Typography>
+            <Typography variant="h5">{userBeanBalance} BEANS</Typography>
           </UnderlinedGrid>
           <Box paddingTop={4} paddingBottom={3}>
             <Box>
               <PriceInput
-                max={+walletSolBalance}
-                value={bakeSOL}
-                onChange={(value) => onUpdateBakeSOL(value)}
+                max={+userBeanBalance}
+                value={inputBeanValue}
+                onChange={(value) => setInputBeanValue(value)}
               />
             </Box>
 
-            <Box marginTop={3} marginBottom={3}>
+            {/* <Box marginTop={3} marginBottom={3}>
               <Button
                 variant="contained"
                 fullWidth
-                onClick={initializeProgram}
+                // onClick={initializeProgram}
                 hidden
                 className="custom-button"
               >
                 Init
               </Button>
-            </Box>
+            </Box> */}
 
             <Box marginTop={3} marginBottom={3}>
               <Button
                 variant="contained"
                 fullWidth
-                disabled={!address || +bakeSOL === 0 || loading}
-                onClick={bake}
+                disabled={!account || +userTokenBalance === 0 || loading}
+                onClick={() => buyBeans()}
                 className="custom-button"
               >
-                ROAST BEANS
+                BUY BEANS
               </Button>
             </Box>
             <Divider />
@@ -242,7 +221,8 @@ export default function BakeCard() {
                 Your Rewards
               </Typography>
               <Typography variant="h5" fontWeight="bolder">
-                {beanRewards} SOL
+                {userBeanReward}
+                Beans
               </Typography>
             </Grid>
             <ButtonContainer container sx={{ display: "flex" }}>
@@ -251,11 +231,11 @@ export default function BakeCard() {
                   variant="contained"
                   color="secondary"
                   fullWidth
-                  disabled={!address || loading}
-                  onClick={reBake}
+                  disabled={!account || loading}
+                  onClick={() => roastBeans()}
                   className="custom-button"
                 >
-                  DARK ROAST
+                  ROAST BEANS
                 </Button>
               </Grid>
               <Grid item flexGrow={1} marginLeft={1} marginTop={3}>
@@ -263,11 +243,11 @@ export default function BakeCard() {
                   variant="contained"
                   color="secondary"
                   fullWidth
-                  disabled={!address || loading}
-                  onClick={eatBeans}
+                  disabled={!account || loading}
+                  onClick={() => sellBeans()}
                   className="custom-button"
                 >
-                  BREW COFFEE
+                  SELL BEANS
                 </Button>
               </Grid>
             </ButtonContainer>
@@ -284,7 +264,10 @@ export default function BakeCard() {
             mt={3}
           >
             <Typography variant="body1">Your Rewards</Typography>
-            <Typography variant="h5">{contractSolBalance} SOL</Typography>
+            <Typography variant="h5">
+              {userBeanReward}
+              Beans
+            </Typography>
           </UnderlinedGrid>
           <Typography
             variant="body1"
@@ -294,7 +277,13 @@ export default function BakeCard() {
           </Typography>
           <Box>
             <Box>
-              <Button variant="contained" fullWidth className="custom-button">
+              <Button
+                variant="contained"
+                fullWidth
+                className="custom-button"
+                disabled={!account || +userBeanBalance === 0 || loading}
+                onClick={() => flipBeans(2)}
+              >
                 <Box sx={{ flexDirection: "column" }}>
                   <Typography>Double Shot</Typography>
                   <Typography sx={{ fontSize: "10px" }}>
@@ -315,8 +304,8 @@ export default function BakeCard() {
               <Button
                 variant="contained"
                 fullWidth
-                disabled={!address || +bakeSOL === 0 || loading}
-                onClick={bake}
+                disabled={!account || +userBeanBalance === 0 || loading}
+                onClick={() => flipBeans(3)}
                 className="custom-button"
               >
                 <Box sx={{ flexDirection: "column" }}>
@@ -336,7 +325,13 @@ export default function BakeCard() {
           </Typography>
           <Box>
             <Box marginBottom={3}>
-              <Button variant="contained" fullWidth className="custom-button">
+              <Button
+                variant="contained"
+                fullWidth
+                className="custom-button"
+                disabled={!account || +userBeanBalance === 0 || loading}
+                onClick={() => flipBeans(3)}
+              >
                 <Box sx={{ flexDirection: "column" }}>
                   <Typography sx={{ textTransform: "uppercase" }}>
                     Quad Shot
@@ -357,15 +352,23 @@ export default function BakeCard() {
             Select HEADS or TAILS to Flip
           </Typography>
           <Box
-            sx={{ display: "flex", justifyContent: "space-around", mt: "1rem" }}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-around",
+              mt: "1rem",
+            }}
           >
             <Button
               variant="outlined"
-              sx={{ textTransform: "uppercase", fontColor: "Black" }}
+              sx={{
+                textTransform: "uppercase",
+                fontColor: "Black",
+              }}
             >
               Heads
             </Button>
-            <Typography>OR</Typography>
+            <Typography variant="subtitle2">OR</Typography>
             <Button
               variant="outlined"
               sx={{ textTransform: "uppercase", fontColor: "Black" }}

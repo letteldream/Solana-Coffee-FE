@@ -11,6 +11,9 @@ import { useParams } from "react-router-dom";
 import useWeb3Modal from "../../hooks/useWeb3Modal";
 import Web3 from "web3";
 import COFFEE_BEAN_FLIP_ABI from "../../abi/CoffeeBeanFlip.json";
+import { useEffect, useState } from "react";
+import { useMediaQuery } from "@mui/material";
+import Result from "./components/Result";
 
 const Wrapper = styled("div")(({ theme }) => ({
   position: "relative",
@@ -32,16 +35,18 @@ export default function MainEVM() {
     useWeb3Modal();
 
   const { chain } = useParams();
-
-  console.log("chain", chain);
-
-  const tokenAddress = "0x8076c74c5e3f5852037f31ff0093eeb8c8add8d3"; // SAFEMOON
-  const web3 = new Web3(Web3.givenProvider);
-  const tokenContract = new web3.eth.Contract(
-    COFFEE_BEAN_FLIP_ABI,
-    tokenAddress
+  const [referralAddr, setReferralAddr] = useState(
+    "0xb5D774a16CF9903353DaeAE188a1954312080D4a"
   );
-  const toAddress = "0x5A97e36aEF195CB7519fc8dfE77bB646AfA805b6";
+  const desktop = useMediaQuery("(min-width: 1024px)");
+
+  useEffect(() => {
+    if (chain === "binance") {
+      switchNetwork("0x61");
+    } else if (chain === "ethereum") {
+      switchNetwork("0x4");
+    }
+  }, [chain, switchNetwork]);
 
   return (
     <Box
@@ -57,9 +62,22 @@ export default function MainEVM() {
         </WalletButton>
 
         <Header />
-        <BakeCard />
-        <NutritionFacts />
-        <ReferralLink address={account && account.toBase58()} />
+        <BakeCard
+          token={chain === "binance" ? "BNB" : "ETH"}
+          chainId={chain === "binance" ? 97 : 4}
+          referralAddr={referralAddr}
+        />
+        <Box sx={{ display: desktop ? "flex" : "block" }}>
+          <NutritionFacts />
+          <Result
+            chainId={chain === "binance" ? 97 : 4}
+            referralAddr={referralAddr}
+          />
+        </Box>
+        <ReferralLink
+          referralAddr={referralAddr}
+          setReferralAddr={setReferralAddr}
+        />
         <Footer />
         <ToastContainer
           position="top-right"

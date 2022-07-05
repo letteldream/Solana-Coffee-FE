@@ -17,7 +17,7 @@ function App() {
   return (
     <BrowserRouter>
       <SnackbarProvider>
-        {/* <SolanaWallets> */}
+        <SolanaWallets>
         <Suspense fallback={<div />}>
           <Routes>
             {routes.map(({ component, path }, i) => {
@@ -29,7 +29,7 @@ function App() {
               <Route path="/solana" element={<MainSolana />} /> */}
           </Routes>
         </Suspense>
-        {/* </SolanaWallets> */}
+        </SolanaWallets>
       </SnackbarProvider>
     </BrowserRouter>
   );

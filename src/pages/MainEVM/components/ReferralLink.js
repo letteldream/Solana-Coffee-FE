@@ -3,6 +3,8 @@ import Card from "@mui/material/Card";
 import Typography from "@mui/material/Typography";
 
 import { styled } from "@mui/system";
+import { Box, useMediaQuery } from "@mui/material";
+import { isAddress } from "../../../utils";
 
 const CardWrapper = styled(Card)({
   background: "transparent",
@@ -21,28 +23,41 @@ const Input = styled("input")(({ theme }) => ({
   color: theme.palette.primary.main,
 }));
 
-export default function ReferralLink({ address }) {
-  const link = `${window.origin}?ref=${address}`;
-
+export default function ReferralLink({ referralAddr, setReferralAddr }) {
+  const desktop = useMediaQuery("(min-width: 1024px)");
+  console.log("referralAddr", referralAddr);
   return (
-    <div style={{marginLeft:"20%"}}>
-    <CardWrapper sx={{width:"60%"}}>
-      <CardContent style={{ paddingLeft: 8, paddingRight: 8 }}>
-        <Typography gutterBottom variant="h5" textAlign="center">
-          Referral Link
-        </Typography>
-        <Input value={address ? link : ""} readOnly />
-        <Typography
-          textAlign="center"
-          variant="body2"
-          marginTop={2}
-          paddingX={3}
-        >
-          Earn 12% of the SOL used to roast beans from anyone who uses your
-          referral link
-        </Typography>
-      </CardContent>
-    </CardWrapper>
-    </div>
+    <Box sx={{ display: desktop ? "flex" : "block", justifyContent: "center" }}>
+      <CardWrapper sx={{ width: desktop ? "55%" : "95%" }}>
+        <CardContent style={{ paddingLeft: 8, paddingRight: 8 }}>
+          <Typography gutterBottom variant="h5" textAlign="center">
+            Referral Link
+          </Typography>
+          <Input
+            value={referralAddr}
+            onChange={(e) => setReferralAddr(e.target.value)}
+          />
+          <Typography
+            textAlign="center"
+            variant="body2"
+            marginTop={2}
+            paddingX={3}
+            sx={{ color: "red" }}
+          >
+            {isAddress(referralAddr) === false ? "Not Valid Address" : ""}
+          </Typography>
+
+          <Typography
+            textAlign="center"
+            variant="body2"
+            marginTop={2}
+            paddingX={3}
+          >
+            Earn 12% of the SOL used to roast beans from anyone who uses your
+            referral link
+          </Typography>
+        </CardContent>
+      </CardWrapper>
+    </Box>
   );
 }
