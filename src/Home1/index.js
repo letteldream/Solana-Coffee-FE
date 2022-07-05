@@ -71,7 +71,7 @@ export default function Home1() {
               <Typography width="60%" textAlign="center" color="white">ETHERUM</Typography>
             </Box>
             <Box className="coin">
-              <Link to="/newHome"><img src={sol} alt="" width={"60%"} /></Link>
+              <Link href="/newHome"><img src={sol} alt="" width={"60%"} /></Link>
               <Typography width="60%" textAlign="center" color="white">SOLANA</Typography>
             </Box>
 
