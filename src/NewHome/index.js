@@ -39,7 +39,7 @@ export default function Home() {
   const wallet = useWallet();
 
   return (
-    <Box sx={{backgroundImage: `url(${backgroundImg})`}}>
+    <Box sx={{backgroundImage: `url(${backgroundImg})`, backgroundSize:"cover"}}>
       <Wrapper>
           <WalletButton>
             <MaterialUIWalletMultiButton variant="text" style={{
