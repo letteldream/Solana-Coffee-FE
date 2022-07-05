@@ -90,11 +90,11 @@ export default function Home1() {
             </Box>
             <Box className="card-box">
               <Box className="coin coin-card">
-                <Link to="/newHome"><img src={sol} alt="" width={"60%"} className="img-location"/></Link>
+                <Link href="/newHome"><img src={sol} alt="" width={"60%"} className="img-location"/></Link>
                 <Typography width="100%" textAlign="center" color="white">SOLANA</Typography>
               </Box>
               <Box className="coin coin-card">
-                <Link to="/newHome"><img src={ellipse} alt="" width={"60%"} className="img-location"/></Link>
+                <Link href="#"><img src={ellipse} alt="" width={"60%"} className="img-location"/></Link>
                 <Typography width="100%" textAlign="center" color="white">COMING SOON</Typography>
               </Box>
             </Box>
