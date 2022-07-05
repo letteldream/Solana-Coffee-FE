@@ -183,6 +183,7 @@ export default function BakeCard({ token, chainId, referralAddr }) {
               <PriceInput
                 max={+userBeanBalance}
                 value={inputBeanValue}
+                symbol={chainId === 97 ? "BNB" : "ETH"}
                 onChange={(value) => setInputBeanValue(value)}
               />
             </Box>
@@ -201,7 +202,6 @@ export default function BakeCard({ token, chainId, referralAddr }) {
 
             <Box marginTop={3} marginBottom={3}>
               <Button
-                variant="contained"
                 fullWidth
                 disabled={!account || +userTokenBalance === 0 || loading}
                 onClick={() => buyBeans()}

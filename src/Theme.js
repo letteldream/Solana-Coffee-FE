@@ -58,7 +58,9 @@ const theme = createTheme({
           minWidth: 138,
         },
         contained: {
-          boxShadow: "6px 6px 20px 6px #00000096",
+          ":hover": {
+            boxShadow: "3px 3px 20px 3px #00000096",
+          },
         },
         containedSecondary: {
           color: "#17215E",

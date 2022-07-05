@@ -19,7 +19,12 @@ const SolInput = styled("input")({
   },
 });
 
-export default function PriceInput({ value, max, onChange = () => {} }) {
+export default function PriceInput({
+  value,
+  max,
+  symbol,
+  onChange = () => {},
+}) {
   return (
     <Box position="relative">
       <SolInput
@@ -33,11 +38,11 @@ export default function PriceInput({ value, max, onChange = () => {} }) {
         fontSize={24}
         position="absolute"
         top={9}
-        right={1}
+        right={20}
         fontWeight={500}
         color="black"
       >
-        SOL
+        {symbol}
       </Typography>
     </Box>
   );
