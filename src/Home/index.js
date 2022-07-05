@@ -1,4 +1,4 @@
-import { flexbox, styled } from "@mui/system";
+import { flexbox, styled, Box } from "@mui/system";
 
 import Header from "./components/Header";
 import BakeCard from "./components/BakeCard";
@@ -21,7 +21,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-import backgroundImg from '../assets/background.png';
+import backgroundImg from './assets/background.png';
 
 const Wrapper = styled("div")(({ theme }) => ({
   position: 'relative',
@@ -42,7 +42,7 @@ export default function OldHome() {
   const wallet = useWallet();
 
   return (
-    <div>
+    <Box sx={{backgroundImage: `url(${backgroundImg})`}}>
       <Wrapper>
           <WalletButton>
             <MaterialUIWalletMultiButton variant="text" style={{
@@ -70,6 +70,6 @@ export default function OldHome() {
             pauseOnHover
           />
       </Wrapper>
-    </div>
+    </Box>
   );
 }

@@ -1,10 +1,11 @@
-import { flexbox, styled } from "@mui/system";
+import { flexbox, styled, Box } from "@mui/system";
 import Header from "./components/Header";
 import BakeCard from "./components/BakeCard";
 import NutritionFacts from "./components/NutritionFacts";
 import ReferralLink from "./components/ReferralLink";
 import { useWallet } from "@solana/wallet-adapter-react";
 import Footer from "./components/Footer";
+import backgroundImg from './assets/background.png';
 import {
   Table,
   TableBody,
@@ -18,9 +19,6 @@ import {
 } from '@solana/wallet-adapter-material-ui';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-
-import backgroundImg from '../assets/background.png';
 
 const Wrapper = styled("div")(({ theme }) => ({
   position: 'relative',
@@ -41,7 +39,7 @@ export default function Home() {
   const wallet = useWallet();
 
   return (
-    <div>
+    <Box sx={{backgroundImage: `url(${backgroundImg})`}}>
       <Wrapper>
           <WalletButton>
             <MaterialUIWalletMultiButton variant="text" style={{
@@ -69,6 +67,6 @@ export default function Home() {
             pauseOnHover
           />
       </Wrapper>
-    </div>
+    </Box>
   );
 }
