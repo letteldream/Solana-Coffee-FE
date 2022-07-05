@@ -5,27 +5,6 @@ import Web3Modal from "web3modal";
 import { toHex } from "../utils";
 import { ethers } from "ethers";
 
-export const networkParams = {
-  "0x63564c40": {
-    chainId: "0x63564c40",
-    rpcUrls: ["https://api.harmony.one"],
-    chainName: "Harmony Mainnet",
-    nativeCurrency: { name: "ONE", decimals: 18, symbol: "ONE" },
-    blockExplorerUrls: ["https://explorer.harmony.one"],
-    iconUrls: ["https://harmonynews.one/wp-content/uploads/2019/11/slfdjs.png"],
-  },
-  "0xa4ec": {
-    chainId: "0xa4ec",
-    rpcUrls: ["https://forno.celo.org"],
-    chainName: "Celo Mainnet",
-    nativeCurrency: { name: "CELO", decimals: 18, symbol: "CELO" },
-    blockExplorerUrl: ["https://explorer.celo.org"],
-    iconUrls: [
-      "https://celo.org/images/marketplace-icons/icon-celo-CELO-color-f.svg",
-    ],
-  },
-};
-
 export const providerOptions = {
   walletlink: {
     package: CoinbaseWalletSDK, // Required
@@ -58,6 +37,7 @@ export default function useWeb3Modal() {
   const connectWallet = async () => {
     try {
       const provider = await web3Modal.connect();
+      console.log("provider", provider);
       const library = new ethers.providers.Web3Provider(provider);
       const accounts = await library.listAccounts();
       const network = await library.getNetwork();
@@ -74,14 +54,21 @@ export default function useWeb3Modal() {
     try {
       await library.provider.request({
         method: "wallet_switchEthereumChain",
-        params: [{ chainId: toHex("0x1") }],
+        params: [{ chainId: toHex("0x4") }],
       });
     } catch (switchError) {
       if (switchError.code === 4902) {
         try {
           await library.provider.request({
             method: "wallet_addEthereumChain",
-            params: [networkParams[toHex("0x1")]],
+            params: {
+              chainId: "0x4",
+              chainName: "Rinkeby Test Network",
+              rpcUrls: [
+                "https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
+              ],
+              blockExplorerUrls: ["https://rinkeby.etherscan.io"],
+            },
           });
         } catch (error) {
           setError(error);

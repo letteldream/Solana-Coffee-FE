@@ -3,18 +3,14 @@ import Header from "./components/Header";
 import BakeCard from "./components/BakeCard";
 import NutritionFacts from "./components/NutritionFacts";
 import ReferralLink from "./components/ReferralLink";
-import { useWallet } from "@solana/wallet-adapter-react";
 import Footer from "./components/Footer";
 import backgroundImg from "./assets/background.png";
 import { Table, TableBody, TableCell, TableRow } from "@material-ui/core";
-import {
-  WalletDialogProvider as MaterialUIWalletDialogProvider,
-  WalletMultiButton as MaterialUIWalletMultiButton,
-  WalletConnectButton,
-} from "@solana/wallet-adapter-material-ui";
+
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
+import useWeb3Modal from "../hooks/useWeb3Modal";
 
 const Wrapper = styled("div")(({ theme }) => ({
   position: "relative",
@@ -32,7 +28,9 @@ const WalletButton = styled("div")(() => ({
 
 export default function MainEVM() {
   //const { address } = useAuthContext();
-  const wallet = useWallet();
+  const { account, connectWallet, disconnect, switchNetwork, error, chainId } =
+    useWeb3Modal();
+
   const { chain } = useParams();
 
   console.log("chain", chain);
@@ -43,23 +41,17 @@ export default function MainEVM() {
     >
       <Wrapper>
         <WalletButton>
-          <MaterialUIWalletMultiButton
-            variant="text"
-            style={{
-              border: "5px solid black",
-              fontWeight: 900,
-              background: "transparent",
-              borderRadius: "10px",
-              color: "black",
-            }}
-          />
+          {!account ? (
+            <button onClick={connectWallet}>Connect Wallet</button>
+          ) : (
+            <button onClick={disconnect}>Disconnect</button>
+          )}
         </WalletButton>
+
         <Header />
         <BakeCard />
         <NutritionFacts />
-        <ReferralLink
-          address={wallet.publicKey && wallet.publicKey.toBase58()}
-        />
+        <ReferralLink address={account && account.toBase58()} />
         <Footer />
         <ToastContainer
           position="top-right"

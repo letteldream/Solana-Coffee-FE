@@ -79,7 +79,7 @@ export default function Home() {
             </Box>
 
             <Box className="coin">
-              <Link href="/evm/binance">
+              <Link href="/evm/ethereum">
                 <img src={eth} alt="" width={"60%"} />
               </Link>
               <Typography width="60%" textAlign="center" color="white">

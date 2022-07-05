@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainSolana from "./MainSolana";
 import MainEVM from "./MainEVM";
 import Home from "./Home";
-import { Wallets } from "./components/wallet";
+import { SolanaWallets } from "./components/SolanaWallets";
 
 import { SnackbarProvider } from "notistack";
 
@@ -15,13 +15,13 @@ function App() {
     <BrowserRouter>
       <Box>
         <SnackbarProvider>
-          <Wallets>
+          <SolanaWallets>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/evm/:chain" element={<MainEVM />} />
               <Route path="/solana" element={<MainSolana />} />
             </Routes>
-          </Wallets>
+          </SolanaWallets>
         </SnackbarProvider>
       </Box>
     </BrowserRouter>
