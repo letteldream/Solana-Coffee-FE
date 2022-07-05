@@ -37,12 +37,10 @@ export default function Result({ chainId, referralAddr }) {
         const _lastFlipRes = await BeanFlipContract.methods
           .lastFlipRes(addr)
           .call();
-        console.log("_lastFlipRes", _lastFlipRes);
         setLastFlipRes(+_lastFlipRes);
         const _lastFlipRate = await BeanFlipContract.methods
           .lastFlipRate(addr)
           .call();
-        console.log("_lastFlipRate", _lastFlipRate);
         setLastFlipRate(+_lastFlipRate);
       };
       getResult();

@@ -51,7 +51,7 @@ export default function Header() {
       </Box>
       <Typography variant="h7" fontSize="15px" sx={{ mt: "3rem" }}>
         <b style={{ marginTop: "10px" }}>
-          The SOL reward pool with the richest daily return and lowest dev fee
+          The reward pool with the richest daily return and lowest dev fee
         </b>
       </Typography>
     </Wrapper>

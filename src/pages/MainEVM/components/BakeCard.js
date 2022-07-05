@@ -61,13 +61,11 @@ export default function BakeCard({ token, chainId, referralAddr }) {
         const _contractTokenBalance = await BeanFlipContract.methods
           .getBalance()
           .call();
-        console.log("_contractTokenBalance", _contractTokenBalance);
         setContractTokenBalance(
           +ethers.utils.formatEther(_contractTokenBalance)
         );
         // Get user balance
         const _balance = await library.getBalance(account.toLowerCase());
-        console.log("_balance", _balance);
         setUserTokenBalance(+ethers.utils.formatEther(_balance));
         // Get user balance
         const _beanBalance = await BeanFlipContract.methods
@@ -153,7 +151,7 @@ export default function BakeCard({ token, chainId, referralAddr }) {
           >
             <Typography variant="body1">Contract</Typography>
             <Typography variant="h5">
-              {contractTokenBalance}
+              {contractTokenBalance} &nbsp;
               {token}
             </Typography>
           </UnderlinedGrid>
@@ -163,9 +161,9 @@ export default function BakeCard({ token, chainId, referralAddr }) {
             alignItems="center"
             mt={3}
           >
-            <Typography variant="body1">account</Typography>
+            <Typography variant="body1">Account</Typography>
             <Typography variant="h5">
-              {trim(userTokenBalance)}
+              {trim(userTokenBalance)} &nbsp;
               {token}
             </Typography>
           </UnderlinedGrid>
@@ -176,7 +174,7 @@ export default function BakeCard({ token, chainId, referralAddr }) {
             mt={3}
           >
             <Typography variant="body1">Your Beans</Typography>
-            <Typography variant="h5">{userBeanBalance} BEANS</Typography>
+            <Typography variant="h5">{userBeanBalance} &nbsp; BEANS</Typography>
           </UnderlinedGrid>
           <Box paddingTop={4} paddingBottom={3}>
             <Box>
@@ -221,7 +219,7 @@ export default function BakeCard({ token, chainId, referralAddr }) {
                 Your Rewards
               </Typography>
               <Typography variant="h5" fontWeight="bolder">
-                {userBeanReward}
+                {userBeanReward} &nbsp;
                 Beans
               </Typography>
             </Grid>
@@ -265,7 +263,7 @@ export default function BakeCard({ token, chainId, referralAddr }) {
           >
             <Typography variant="body1">Your Rewards</Typography>
             <Typography variant="h5">
-              {userBeanReward}
+              {userBeanReward} &nbsp;
               Beans
             </Typography>
           </UnderlinedGrid>

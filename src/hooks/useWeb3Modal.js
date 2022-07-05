@@ -165,7 +165,7 @@ export default function useWeb3Modal() {
   useEffect(() => {
     if (provider?.on) {
       const handleAccountsChanged = (accounts) => {
-        console.log("accountsChanged", accounts);
+        // console.log("accountsChanged", accounts);
         if (accounts) setAccount(accounts[0]);
       };
 
@@ -174,7 +174,7 @@ export default function useWeb3Modal() {
       };
 
       const handleDisconnect = () => {
-        console.log("disconnect", error);
+        // console.log("disconnect", error);
         disconnect();
       };
 

@@ -14,6 +14,7 @@ import COFFEE_BEAN_FLIP_ABI from "../../abi/CoffeeBeanFlip.json";
 import { useEffect, useState } from "react";
 import { useMediaQuery } from "@mui/material";
 import Result from "./components/Result";
+import { shortenAddress } from "../../utils";
 
 const Wrapper = styled("div")(({ theme }) => ({
   position: "relative",
@@ -35,9 +36,7 @@ export default function MainEVM() {
     useWeb3Modal();
 
   const { chain } = useParams();
-  const [referralAddr, setReferralAddr] = useState(
-    "0xb5D774a16CF9903353DaeAE188a1954312080D4a"
-  );
+  const [referralAddr, setReferralAddr] = useState("");
   const desktop = useMediaQuery("(min-width: 1024px)");
 
   useEffect(() => {
@@ -57,11 +56,11 @@ export default function MainEVM() {
           {!account ? (
             <button onClick={connectWallet}>Connect Wallet</button>
           ) : (
-            <button onClick={disconnect}>Disconnect</button>
+            <button onClick={disconnect}>{shortenAddress(account)}</button>
           )}
         </WalletButton>
 
-        <Header />
+        <Header token={chain === "binance" ? "BNB" : "ETH"} />
         <BakeCard
           token={chain === "binance" ? "BNB" : "ETH"}
           chainId={chain === "binance" ? 97 : 4}
@@ -78,7 +77,7 @@ export default function MainEVM() {
           referralAddr={referralAddr}
           setReferralAddr={setReferralAddr}
         />
-        <Footer />
+        <Footer chain={chain} />
         <ToastContainer
           position="top-right"
           autoClose={5000}
