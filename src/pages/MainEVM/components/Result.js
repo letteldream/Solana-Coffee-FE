@@ -19,9 +19,9 @@ const CardWrapper = styled(Card)({
   border: "5px solid #555",
 });
 
-export default function Result({ chainId, referralAddr }) {
+export default function Result({ account, chainId, library, referralAddr }) {
   const desktop = useMediaQuery("(min-width: 1024px)");
-  const { account, library } = useWeb3Modal();
+
   const [loading, setLoading] = useState(false);
 
   // Get contract

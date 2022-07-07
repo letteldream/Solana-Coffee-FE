@@ -39,8 +39,7 @@ const UnderlinedGrid = styled(Grid)(() => ({
   borderBottom: "1px solid black",
 }));
 
-export default function BakeCard({ token, chainId, referralAddr }) {
-  const { account, library } = useWeb3Modal();
+export default function BakeCard({ token, account, chainId, library, referralAddr }) {
   const [loading, setLoading] = useState(false);
   const desktop = useMediaQuery("(min-width: 1024px)");
   const { setIsLoading } = useContractContext();

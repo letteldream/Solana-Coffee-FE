@@ -1,6 +1,6 @@
 import WalletConnect from "@walletconnect/web3-provider";
 import CoinbaseWalletSDK from "@coinbase/wallet-sdk";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Web3Modal from "web3modal";
 import { toHex } from "../utils";
 import { ethers } from "ethers";
@@ -93,10 +93,14 @@ export default function useWeb3Modal() {
       const provider = await web3Modal.connect();
       const library = new ethers.providers.Web3Provider(provider);
       const accounts = await library.listAccounts();
+
       const network = await library.getNetwork();
       setProvider(provider);
       setLibrary(library);
-      if (accounts) setAccount(accounts[0]);
+      if (accounts) {
+        console.log("accounts", accounts[0]);
+        setAccount(accounts[0]);
+      }
       setChainId(network.chainId);
     } catch (error) {
       setError(error);
@@ -151,10 +155,10 @@ export default function useWeb3Modal() {
     setNetwork("");
   };
 
-  const disconnect = async () => {
+  const disconnect = useCallback(async () => {
     await web3Modal.clearCachedProvider();
     refreshState();
-  };
+  }, []);
 
   useEffect(() => {
     if (web3Modal.cachedProvider) {
@@ -190,7 +194,7 @@ export default function useWeb3Modal() {
         }
       };
     }
-  }, [provider]);
+  }, [provider, disconnect]);
 
   return {
     account,

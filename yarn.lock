@@ -15267,7 +15267,7 @@ web3@^1.7.0:
     web3-shh "1.7.4"
     web3-utils "1.7.4"
 
-web3modal@^1.9.7:
+web3modal@^1.9.5:
   version "1.9.8"
   resolved "https://registry.yarnpkg.com/web3modal/-/web3modal-1.9.8.tgz#e2a32f34b051cd0848594111f6bb32abc8a91e44"
   integrity sha512-ruYsh4TV1SUAljBW/Pd4itW2idKlo9xr/g2dKhBDdaafWNCVdpaK92cQ7EM53rg2KQHWJhqj1IThbv7cPV7ayA==

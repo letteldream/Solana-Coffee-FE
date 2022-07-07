@@ -30,8 +30,16 @@ const WalletButton = styled("div")(() => ({
 
 export default function MainEVM() {
   //const { address } = useAuthContext();
-  const { account, connectWallet, disconnect, switchNetwork, error, chainId } =
-    useWeb3Modal();
+  const {
+    account,
+    connectWallet,
+    disconnect,
+    switchNetwork,
+    error,
+    chainId,
+    library,
+  } = useWeb3Modal();
+  console.log("account", account);
 
   const { chain } = useParams();
   const [referralAddr, setReferralAddr] = useState("");
@@ -81,6 +89,8 @@ export default function MainEVM() {
         <Header token={chain === "binance" ? "BNB" : "ETH"} />
         <BakeCard
           token={chain === "binance" ? "BNB" : "ETH"}
+          account={account}
+          library={library}
           chainId={chain === "binance" ? 97 : 4}
           referralAddr={referralAddr}
         />
@@ -93,6 +103,8 @@ export default function MainEVM() {
           {!desktop && <NutritionFacts />}
         </Box>
         <ReferralLink
+          account={account}
+          libarary={library}
           token={chain === "binance" ? "BNB" : "ETH"}
           referralAddr={referralAddr}
           setReferralAddr={setReferralAddr}
