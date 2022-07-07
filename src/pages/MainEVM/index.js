@@ -85,11 +85,12 @@ export default function MainEVM() {
           referralAddr={referralAddr}
         />
         <Box sx={{ display: desktop ? "flex" : "block" }}>
-          <NutritionFacts />
+          {desktop && <NutritionFacts />}
           <Result
             chainId={chain === "binance" ? 97 : 4}
             referralAddr={referralAddr}
           />
+          {!desktop && <NutritionFacts />}
         </Box>
         <ReferralLink
           token={chain === "binance" ? "BNB" : "ETH"}
