@@ -1,32 +1,31 @@
-import CardContent from "@mui/material/CardContent";
-import Card from "@mui/material/Card";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import LinearProgress from "@mui/material/LinearProgress";
-import Divider from "@mui/material/Divider";
-import { styled } from "@mui/system";
-import { useMediaQuery } from "@mui/material";
-import useWeb3Modal from "../../../hooks/useWeb3Modal";
-import PriceInput from "../../../components/PriceInput";
-import { useEffect, useMemo, useState } from "react";
-import Web3 from "web3";
-import BEAN_FLIP_ABI from "../../../abi/CoffeeBeanFlip.json";
-import { BEAN_FLIP_ADDRESS } from "../../../config";
-import { ethers } from "ethers";
-import { trim } from "../../../utils";
+import CardContent from '@mui/material/CardContent';
+import Card from '@mui/material/Card';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import LinearProgress from '@mui/material/LinearProgress';
+import Divider from '@mui/material/Divider';
+import { styled } from '@mui/system';
+import { useMediaQuery } from '@mui/material';
+import useWeb3Modal from '../../../hooks/useWeb3Modal';
+import PriceInput from '../../../components/PriceInput';
+import { useEffect, useMemo, useState } from 'react';
+import BEAN_FLIP_ABI from '../../../abi/CoffeeBeanFlip.json';
+import { BEAN_FLIP_ADDRESS } from '../../../config';
+import { ethers } from 'ethers';
+import { trim, isAddress } from '../../../utils';
 
 const CardWrapper = styled(Card)({
-  background: "transparent",
+  background: 'transparent',
   marginBottom: 24,
-  border: "5px solid #555",
+  border: '5px solid #555',
 });
 
 const ButtonContainer = styled(Grid)(({ theme }) => ({
-  [theme.breakpoints.down("sm")]: {
-    flexDirection: "column",
-    "> div": {
+  [theme.breakpoints.down('sm')]: {
+    flexDirection: 'column',
+    '> div': {
       marginLeft: 0,
       marginRight: 0,
     },
@@ -34,113 +33,148 @@ const ButtonContainer = styled(Grid)(({ theme }) => ({
 }));
 
 const UnderlinedGrid = styled(Grid)(() => ({
-  borderBottom: "1px solid black",
+  borderBottom: '1px solid black',
 }));
 
 export default function BakeCard({ token, chainId, referralAddr }) {
   const { account, library } = useWeb3Modal();
   const [loading, setLoading] = useState(false);
-  const desktop = useMediaQuery("(min-width: 1024px)");
+  const desktop = useMediaQuery('(min-width: 1024px)');
 
   // Get contract
   const BeanFlipContract = useMemo(() => {
-    const web3 = new Web3(Web3.givenProvider);
-    return new web3.eth.Contract(BEAN_FLIP_ABI, BEAN_FLIP_ADDRESS[chainId]);
-  }, [chainId]);
+    const address = BEAN_FLIP_ADDRESS[chainId];
+    const contract = new ethers.Contract(address, BEAN_FLIP_ABI, library);
+    if (account) {
+      const signer = library.getSigner();
+      return contract.connect(signer);
+    } else {
+      return contract;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, chainId]);
+
   // State Variable
   const [contractTokenBalance, setContractTokenBalance] = useState(0);
   const [userTokenBalance, setUserTokenBalance] = useState(0);
   const [userBeanBalance, setUserBeanBalance] = useState(0);
-  const [inputBeanValue, setInputBeanValue] = useState(0);
+  const [inputBeanValue, setInputBeanValue] = useState('0');
   const [userBeanReward, setUserBeanReward] = useState(0);
+  const [shot, setShot] = useState(0);
+
+  const getInfo = async () => {
+    // Get contract balance
+    try {
+      const _contractTokenBalance = await BeanFlipContract.getBalance();
+      setContractTokenBalance(
+        +(+ethers.utils.formatEther(_contractTokenBalance)).toFixed(5)
+      );
+    } catch (_) {}
+
+    // Get user balance
+    try {
+      const _balance = await library.getBalance(account);
+      setUserTokenBalance(+(+ethers.utils.formatEther(_balance)).toFixed(5));
+    } catch (_) {}
+
+    // Get user bean balance
+    try {
+      const _beanBalance = await BeanFlipContract.getMyBeans(account);
+      setUserBeanBalance(+_beanBalance);
+    } catch (_) {}
+
+    // Get user reward
+    try {
+      const _beanReward = await BeanFlipContract.beanRewards(account);
+      setUserBeanReward(+(+ethers.utils.formatEther(_beanReward)).toFixed(5));
+    } catch (_) {}
+  };
 
   useEffect(() => {
     if (account && library && BeanFlipContract) {
-      const getInfo = async () => {
-        // Get contract balance
-        const _contractTokenBalance = await BeanFlipContract.methods
-          .getBalance()
-          .call();
-        setContractTokenBalance(
-          +ethers.utils.formatEther(_contractTokenBalance)
-        );
-        // Get user balance
-        const _balance = await library.getBalance(account.toLowerCase());
-        setUserTokenBalance(+ethers.utils.formatEther(_balance));
-        // Get user balance
-        const _beanBalance = await BeanFlipContract.methods
-          .getMyBeans(account)
-          .call();
-        setUserBeanBalance(+_beanBalance);
-        // Get user reward
-        const _beanReward = await BeanFlipContract.methods
-          .beanRewards(account)
-          .call();
-        setUserBeanReward(+_beanReward);
-      };
       getInfo();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, library, BeanFlipContract]);
 
   const buyBeans = async () => {
-    if (BeanFlipContract && inputBeanValue > 0) {
-      const addr = referralAddr === "" ? account : referralAddr;
-      try {
-        setLoading(true);
+    const beanValue = ethers.utils.parseEther(inputBeanValue.toString());
+    if (BeanFlipContract && beanValue.gt(0)) {
+      setLoading(true);
 
-        await BeanFlipContract.methods.buyBeans(addr).send({
-          value: ethers.utils.parseEther(inputBeanValue),
+      try {
+        const addr = isAddress(referralAddr) ? referralAddr : account;
+        await BeanFlipContract.buyBeans(addr, {
+          value: beanValue,
           from: account,
         });
-        setLoading(false);
+
+        await getInfo();
+
+        setInputBeanValue('0');
       } catch (err) {
-        console.log("err", err);
+        console.log('err', err);
       }
+
+      setLoading(false);
     }
   };
 
   const roastBeans = async () => {
     if (BeanFlipContract) {
-      const addr = referralAddr === "" ? account : referralAddr;
-      try {
-        setLoading(true);
-        await BeanFlipContract.methods.roastBeans(addr).send({ from: account });
+      setLoading(true);
 
-        setLoading(false);
+      try {
+        const addr = isAddress(referralAddr) ? referralAddr : account;
+
+        await BeanFlipContract.roastBeans(addr);
+
+        await getInfo();
       } catch (err) {
-        console.log("err", err);
+        console.log('err', err);
       }
+
+      setLoading(false);
     }
   };
 
   const sellBeans = async () => {
     if (BeanFlipContract) {
-      try {
-        setLoading(false);
+      setLoading(true);
 
-        await BeanFlipContract.methods.sellBeans().send({ from: account });
+      try {
+        await BeanFlipContract.sellBeans();
+
+        await getInfo();
       } catch (err) {
-        console.log("err", err);
+        console.log('err', err);
       }
+
+      setLoading(false);
     }
   };
 
-  const flipBeans = async (shot) => {
-    if (BeanFlipContract) {
-      try {
-        setLoading(true);
-        await BeanFlipContract.methods.flipBeans(shot).send({ from: account });
+  const flipBeans = async () => {
+    if (BeanFlipContract && shot > 1) {
+      setLoading(true);
 
-        setLoading(false);
+      try {
+        await BeanFlipContract.flipBeans(shot);
+
+        await getInfo();
       } catch (err) {
-        console.log("err", err);
+        console.log('err', err);
       }
+
+      setLoading(false);
     }
+
+    setShot(0);
   };
 
   return (
-    <Box fullWidth sx={{ display: desktop ? "flex" : "block" }}>
-      <CardWrapper sx={{ width: desktop ? "55%" : "95%" }}>
+    <Box fullWidth sx={{ display: desktop ? 'flex' : 'block' }}>
+      <CardWrapper sx={{ width: desktop ? '55%' : '95%' }}>
         {loading && <LinearProgress color="secondary" />}
         <CardContent>
           <UnderlinedGrid
@@ -181,8 +215,16 @@ export default function BakeCard({ token, chainId, referralAddr }) {
               <PriceInput
                 max={+userBeanBalance}
                 value={inputBeanValue}
-                symbol={chainId === 97 ? "BNB" : "ETH"}
-                onChange={(value) => setInputBeanValue(value)}
+                symbol={token}
+                onChange={(value) => {
+                  if (value === '') {
+                    setInputBeanValue('0');
+                  } else if (value.indexOf('.') === -1) {
+                    setInputBeanValue(parseFloat(value).toString());
+                  } else {
+                    setInputBeanValue(value);
+                  }
+                }}
               />
             </Box>
 
@@ -219,11 +261,10 @@ export default function BakeCard({ token, chainId, referralAddr }) {
                 Your Rewards
               </Typography>
               <Typography variant="h5" fontWeight="bolder">
-                {userBeanReward} &nbsp;
-                Beans
+                {userBeanReward} &nbsp; {token}
               </Typography>
             </Grid>
-            <ButtonContainer container sx={{ display: "flex" }}>
+            <ButtonContainer container sx={{ display: 'flex' }}>
               <Grid item flexGrow={1} marginRight={1} marginTop={3}>
                 <Button
                   variant="contained"
@@ -252,7 +293,12 @@ export default function BakeCard({ token, chainId, referralAddr }) {
           </Box>
         </CardContent>
       </CardWrapper>
-      <CardWrapper sx={{ width: desktop ? "45%" : "95%" }}>
+      <CardWrapper
+        sx={{
+          width: desktop ? '45%' : '95%',
+          background: 'rgb(255 252 248) !important',
+        }}
+      >
         {loading && <LinearProgress color="secondary" />}
         <CardContent>
           <UnderlinedGrid
@@ -263,13 +309,12 @@ export default function BakeCard({ token, chainId, referralAddr }) {
           >
             <Typography variant="body1">Your Rewards</Typography>
             <Typography variant="h5">
-              {userBeanReward} &nbsp;
-              Beans
+              {userBeanReward} &nbsp; {token}
             </Typography>
           </UnderlinedGrid>
           <Typography
             variant="body1"
-            sx={{ fontSize: "16px", textAlign: "center", mt: "1rem" }}
+            sx={{ fontSize: '16px', textAlign: 'center', mt: '1rem' }}
           >
             2x your rewards with:
           </Typography>
@@ -278,22 +323,21 @@ export default function BakeCard({ token, chainId, referralAddr }) {
               <Button
                 variant="contained"
                 fullWidth
-                className="custom-button"
+                className={`custom-button ${
+                  shot === 2 && 'custom-button--active'
+                }`}
                 disabled={!account || +userBeanBalance === 0 || loading}
-                onClick={() => flipBeans(2)}
+                onClick={() => setShot(2)}
               >
-                <Box sx={{ flexDirection: "column" }}>
+                <Box sx={{ flexDirection: 'column' }}>
                   <Typography>Double Shot</Typography>
-                  <Typography sx={{ fontSize: "10px" }}>
-                    50% change of winning
-                  </Typography>
                 </Box>
               </Button>
             </Box>
           </Box>
           <Typography
             variant="body1"
-            sx={{ fontSize: "16px", textAlign: "center", mt: "1rem" }}
+            sx={{ fontSize: '16px', textAlign: 'center', mt: '1rem' }}
           >
             3x your rewards with:
           </Typography>
@@ -302,22 +346,21 @@ export default function BakeCard({ token, chainId, referralAddr }) {
               <Button
                 variant="contained"
                 fullWidth
+                className={`custom-button ${
+                  shot === 3 && 'custom-button--active'
+                }`}
                 disabled={!account || +userBeanBalance === 0 || loading}
-                onClick={() => flipBeans(3)}
-                className="custom-button"
+                onClick={() => setShot(3)}
               >
-                <Box sx={{ flexDirection: "column" }}>
+                <Box sx={{ flexDirection: 'column' }}>
                   <Typography>Triple Shot</Typography>
-                  <Typography sx={{ fontSize: "10px" }}>
-                    33% change of winning
-                  </Typography>
                 </Box>
               </Button>
             </Box>
           </Box>
           <Typography
             variant="body1"
-            sx={{ fontSize: "16px", textAlign: "center", mt: "1rem" }}
+            sx={{ fontSize: '16px', textAlign: 'center', mt: '1rem' }}
           >
             4x your rewards with:
           </Typography>
@@ -326,18 +369,15 @@ export default function BakeCard({ token, chainId, referralAddr }) {
               <Button
                 variant="contained"
                 fullWidth
-                className="custom-button"
+                className={`custom-button ${
+                  shot === 4 && 'custom-button--active'
+                }`}
                 disabled={!account || +userBeanBalance === 0 || loading}
-                onClick={() => flipBeans(3)}
+                onClick={() => setShot(4)}
               >
-                <Box sx={{ flexDirection: "column" }}>
-                  <Typography sx={{ textTransform: "uppercase" }}>
+                <Box sx={{ flexDirection: 'column' }}>
+                  <Typography sx={{ textTransform: 'uppercase' }}>
                     Quad Shot
-                  </Typography>
-                  <Typography
-                    sx={{ fontSize: "10px", textTransform: "uppercase" }}
-                  >
-                    25% change of winning
                   </Typography>
                 </Box>
               </Button>
@@ -345,31 +385,35 @@ export default function BakeCard({ token, chainId, referralAddr }) {
           </Box>
           <Typography
             variant="body1"
-            sx={{ fontSize: "16px", textAlign: "center", mt: "1rem" }}
+            sx={{ fontSize: '16px', textAlign: 'center', mt: '1rem' }}
           >
             Select HEADS or TAILS to Flip
           </Typography>
           <Box
             sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-around",
-              mt: "1rem",
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-around',
+              mt: '1rem',
             }}
           >
             <Button
               variant="outlined"
               sx={{
-                textTransform: "uppercase",
-                fontColor: "Black",
+                textTransform: 'uppercase',
+                fontColor: 'Black',
               }}
+              disabled={!account || +userBeanBalance === 0 || loading}
+              onClick={() => flipBeans()}
             >
               Heads
             </Button>
             <Typography variant="subtitle2">OR</Typography>
             <Button
               variant="outlined"
-              sx={{ textTransform: "uppercase", fontColor: "Black" }}
+              sx={{ textTransform: 'uppercase', fontColor: 'Black' }}
+              disabled={!account || +userBeanBalance === 0 || loading}
+              onClick={() => flipBeans()}
             >
               Tails
             </Button>

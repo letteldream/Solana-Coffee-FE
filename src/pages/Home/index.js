@@ -1,5 +1,6 @@
-import { flexbox, styled, Box } from "@mui/system";
-import { Table, TableBody, TableCell, TableRow } from "@material-ui/core";
+import { styled, Box } from "@mui/system";
+import ReactPlayer from "react-player";
+import { makeStyles } from "@mui/styles";
 import logo from "./assets/Logo.png";
 import bnb from "./assets/BNB.png";
 import eth from "./assets/Eth.png";
@@ -10,6 +11,7 @@ import twitter from "./assets/Twitter.png";
 import telegram from "./assets/Telegram.png";
 import instagram from "./assets/Instagram.png";
 import backgroundImg from "./assets/background.png";
+import bgVideo from "../../assets/bg.mp4";
 import { Grid, Typography, Link, useMediaQuery } from "@mui/material";
 import "./index.css";
 import React from "react";
@@ -17,31 +19,98 @@ const UnderlinedGrid = styled(Grid)(() => ({
   borderBottom: "3px solid white",
 }));
 
+const useStyles = makeStyles({
+  root: {
+    width: "100%",
+    height: "100vh",
+    position: "relative",
+    "& video": {
+      objectFit: "cover",
+    },
+
+    objectFit: "cover",
+  },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    // bottom: 0,
+    // height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  title: {
+    paddingBottom: "20px",
+  },
+});
+
 export default function Home() {
   const desktop = useMediaQuery("(min-width: 768px)");
+  const classes = useStyles();
   return (
-    <>
-      <Box
-        sx={{
+    <section className={classes.root}>
+      <div
+        style={{
+          position: "fixed",
           width: "100%",
           height: "100vh",
-          backgroundImage: `url(${backgroundImg})`,
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-          padding: "0px",
         }}
       >
+        <ReactPlayer
+          url={bgVideo}
+          playing
+          loop
+          muted
+          width="100%"
+          height="100%"
+        />
+      </div>
+      {/* <Box
+        sx={{
+          width: '100%',
+          height: '100vh',
+          backgroundImage: `url(${backgroundImg})`,
+          backgroundPosition: 'center',
+          backgroundSize: 'cover',
+          padding: '0px',
+        }}
+      > */}
+      <Box className={classes.overlay} sx={{ bottom: desktop ? "0" : null }}>
         <Box sx={{ display: "flex", justifyContent: "end" }}>
-          <img src={discord} className="header-img" alt="" />
-          <img src={twitter} className="header-img" alt="" />
-          <img src={telegram} className="header-img" alt="" />
-          <img src={instagram} className="header-img" alt="" />
+          <a
+            href="https://discord.gg/pcQ9hdsBje"
+            className="header-img"
+            target="__blank"
+          >
+            <img src={discord} alt="" />
+          </a>
+          <a
+            href="https://twitter.com/CoffeeBeanFlip"
+            className="header-img"
+            target="__blank"
+          >
+            <img src={twitter} alt="" />
+          </a>
+          <a
+            href="https://t.me/coffeebeanflip"
+            className="header-img"
+            target="__blank"
+          >
+            <img src={telegram} alt="" />
+          </a>
+          <a
+            href="https://t.me/coffeebeanflip"
+            className="header-img"
+            target="__blank"
+          >
+            <img src={instagram} alt="" />
+          </a>
         </Box>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <img src={logo} alt="" className="logo" />
         </Box>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <UnderlinedGrid
+          <Grid
             container
             justifyContent="center"
             width="100%"
@@ -54,7 +123,7 @@ export default function Home() {
             <Typography variant="h5" fontSize="40px" color="black">
               &nbsp;&nbsp;FLIP
             </Typography>
-          </UnderlinedGrid>
+          </Grid>
         </Box>
         <Box sx={{ display: "flex", justifyContent: "center" }}>
           <Typography
@@ -157,6 +226,7 @@ export default function Home() {
           </Box>
         )}
       </Box>
-    </>
+      {/* </Box> */}
+    </section>
   );
 }

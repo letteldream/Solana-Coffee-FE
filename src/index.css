@@ -43,6 +43,13 @@ code {
   font-size: 20px !important;
   border-radius: 10px !important;
   border: 2px solid #c6aa53 !important;
+  box-shadow: none !important;
+}
+
+.custom-button--active,
+.custom-button:active {
+  background-color: #afe599 !important;
+  border: 2px solid #86aa53 !important;
 }
 
 .MuiPaper-rounded {

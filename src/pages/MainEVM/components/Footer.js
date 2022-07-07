@@ -1,20 +1,20 @@
-import Grid from "@mui/material/Grid";
+import Grid from '@mui/material/Grid';
 
-import solIcon from "../assets/SOLIcon.png";
-import tgIcon from "../assets/TGIcon.png";
-import twIcon from "../assets/TWIcon.png";
-import dcIcon from "../assets/DCIcon.png";
+import esIcon from '../assets/ESIcon.png';
+import tgIcon from '../assets/TGIcon.png';
+import twIcon from '../assets/TWIcon.png';
+import dcIcon from '../assets/DCIcon.png';
 
-export default function Footer({ chain }) {
-  const scanUrl =
-    chain === "binance"
-      ? "https://testnet.bscscan.com/address/0xE30418312b8CA62750d1f6a19EdE067C3B72EED9"
-      : "https://rinkeby.etherscan.io/address/0x51336d82011353d57C7033463c45aD1C5890C01E";
+import { BEAN_FLIP_ADDRESS, SCAN_EXPLORER_URL } from '../../../config';
+
+export default function Footer({ chainId }) {
+  const scanUrl = SCAN_EXPLORER_URL[chainId] + BEAN_FLIP_ADDRESS[chainId];
+
   return (
     <Grid container justifyContent="center" spacing={2} marginTop={4}>
       <Grid item>
         <a href={scanUrl} target="__blank">
-          <img src={solIcon} alt="" width={48} height={48} />
+          <img src={esIcon} alt="" width={48} height={48} />
         </a>
       </Grid>
       <Grid item>

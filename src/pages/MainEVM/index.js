@@ -1,33 +1,31 @@
-import { flexbox, styled, Box } from "@mui/system";
-import Header from "./components/Header";
-import BakeCard from "./components/BakeCard";
-import NutritionFacts from "./components/NutritionFacts";
-import ReferralLink from "./components/ReferralLink";
-import Footer from "./components/Footer";
-import backgroundImg from "./assets/background.png";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { useParams } from "react-router-dom";
-import useWeb3Modal from "../../hooks/useWeb3Modal";
-import Web3 from "web3";
-import COFFEE_BEAN_FLIP_ABI from "../../abi/CoffeeBeanFlip.json";
-import { useEffect, useState } from "react";
-import { useMediaQuery } from "@mui/material";
-import Result from "./components/Result";
-import { shortenAddress } from "../../utils";
+import { styled, Box } from '@mui/system';
+import Header from './components/Header';
+import BakeCard from './components/BakeCard';
+import NutritionFacts from './components/NutritionFacts';
+import ReferralLink from './components/ReferralLink';
+import Footer from './components/Footer';
+import backgroundImg from './assets/background.png';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useParams } from 'react-router-dom';
+import useWeb3Modal from '../../hooks/useWeb3Modal';
+import { useEffect, useState } from 'react';
+import { useMediaQuery } from '@mui/material';
+import Result from './components/Result';
+import { shortenAddress } from '../../utils';
 
-const Wrapper = styled("div")(({ theme }) => ({
-  position: "relative",
+const Wrapper = styled('div')(({ theme }) => ({
+  position: 'relative',
   maxWidth: 500,
-  margin: "0 auto",
-  [theme.breakpoints.down("sm")]: {
-    maxWidth: "100%",
+  margin: '0 auto',
+  [theme.breakpoints.down('sm')]: {
+    maxWidth: '100%',
   },
 }));
 
-const WalletButton = styled("div")(() => ({
-  display: "flex",
-  flexDirection: "row-reverse",
+const WalletButton = styled('div')(() => ({
+  display: 'flex',
+  flexDirection: 'row-reverse',
 }));
 
 export default function MainEVM() {
@@ -36,20 +34,20 @@ export default function MainEVM() {
     useWeb3Modal();
 
   const { chain } = useParams();
-  const [referralAddr, setReferralAddr] = useState("");
-  const desktop = useMediaQuery("(min-width: 1024px)");
+  const [referralAddr, setReferralAddr] = useState('');
+  const desktop = useMediaQuery('(min-width: 1024px)');
 
   useEffect(() => {
-    if (chain === "binance") {
-      switchNetwork("0x61");
-    } else if (chain === "ethereum") {
-      switchNetwork("0x4");
+    if (chain === 'binance') {
+      switchNetwork('0x61');
+    } else if (chain === 'ethereum') {
+      switchNetwork('0x4');
     }
   }, [chain, switchNetwork]);
 
   return (
     <Box
-      sx={{ backgroundImage: `url(${backgroundImg})`, backgroundSize: "cover" }}
+      sx={{ backgroundImage: `url(${backgroundImg})`, backgroundSize: 'cover' }}
     >
       <Wrapper>
         <WalletButton>
@@ -60,24 +58,25 @@ export default function MainEVM() {
           )}
         </WalletButton>
 
-        <Header token={chain === "binance" ? "BNB" : "ETH"} />
+        <Header token={chain === 'binance' ? 'BNB' : 'ETH'} />
         <BakeCard
-          token={chain === "binance" ? "BNB" : "ETH"}
-          chainId={chain === "binance" ? 97 : 4}
+          token={chain === 'binance' ? 'BNB' : 'ETH'}
+          chainId={chain === 'binance' ? 97 : 4}
           referralAddr={referralAddr}
         />
-        <Box sx={{ display: desktop ? "flex" : "block" }}>
+        <Box sx={{ display: desktop ? 'flex' : 'block' }}>
           <NutritionFacts />
           <Result
-            chainId={chain === "binance" ? 97 : 4}
+            chainId={chain === 'binance' ? 97 : 4}
             referralAddr={referralAddr}
           />
         </Box>
         <ReferralLink
+          token={chain === 'binance' ? 'BNB' : 'ETH'}
           referralAddr={referralAddr}
           setReferralAddr={setReferralAddr}
         />
-        <Footer chain={chain} />
+        <Footer chainId={chain === 'binance' ? 97 : 4} />
         <ToastContainer
           position="top-right"
           autoClose={5000}

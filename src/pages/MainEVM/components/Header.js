@@ -1,14 +1,15 @@
-import Typography from "@mui/material/Typography";
-import { styled, Box } from "@mui/system";
-import logo from "../../../assets/FullLogo.png";
-import { Grid } from "@mui/material";
+import { styled, Box } from '@mui/system';
+import { Grid, Link, Typography } from '@mui/material';
+import logo from '../../../assets/FullLogo.png';
+
 const UnderlinedGrid = styled(Grid)(() => ({
-  borderBottom: "1px solid black",
+  borderBottom: '1px solid black',
 }));
-const Wrapper = styled("div")(({ theme }) => ({
-  textAlign: "center",
+
+const Wrapper = styled('div')(({ theme }) => ({
+  textAlign: 'center',
   paddingBottom: 24,
-  [theme.breakpoints.down("md")]: {
+  [theme.breakpoints.down('md')]: {
     h5: {
       fontSize: 20,
       margin: 0,
@@ -19,8 +20,10 @@ const Wrapper = styled("div")(({ theme }) => ({
 export default function Header({ token }) {
   return (
     <Wrapper>
-      <img src={logo} alt="" width={"20%"} />
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
+      <Link href="/">
+        <img src={logo} alt="" width={'20%'} />
+      </Link>
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <UnderlinedGrid
           container
           justifyContent="center"
@@ -36,7 +39,7 @@ export default function Header({ token }) {
           </Typography>
         </UnderlinedGrid>
       </Box>
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
         <UnderlinedGrid
           container
           justifyContent="center"
@@ -49,8 +52,8 @@ export default function Header({ token }) {
           </Typography>
         </UnderlinedGrid>
       </Box>
-      <Typography variant="h7" fontSize="15px" sx={{ mt: "3rem" }}>
-        <b style={{ marginTop: "10px" }}>
+      <Typography variant="h7" fontSize="15px" sx={{ mt: '3rem' }}>
+        <b style={{ marginTop: '10px' }}>
           The {token} reward pool with the richest daily return and lowest dev
           fee
         </b>
