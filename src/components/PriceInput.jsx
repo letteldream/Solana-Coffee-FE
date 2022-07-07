@@ -5,12 +5,11 @@ import { styled } from "@mui/system";
 const SolInput = styled("input")({
   fontSize: 24,
   fontWeight: 500,
-  padding: "12px 90px 12px 16px",
-  textAlign: "center",
+  textAlign: "right",
   borderRadius: 0,
-  border: "1px solid #555",
-  background: "white",
-  width: "100%",
+  border: 0,
+  background: "transparent",
+  width: "50%",
   outline: "none",
   "&::-webkit-outer-spin-button, &::-webkit-inner-spin-button": {
     WebkitAppearance: "none",
@@ -26,7 +25,16 @@ export default function PriceInput({
   onChange = () => {},
 }) {
   return (
-    <Box position="relative">
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        background: "white",
+        height: "50px",
+        border: "1px solid black",
+      }}
+    >
       <SolInput
         type="number"
         min={0}
@@ -34,14 +42,7 @@ export default function PriceInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
-      <Typography
-        fontSize={24}
-        position="absolute"
-        top={9}
-        right={20}
-        fontWeight={500}
-        color="black"
-      >
+      <Typography fontSize={24} fontWeight={500} color="black">
         {symbol}
       </Typography>
     </Box>

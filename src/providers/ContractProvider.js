@@ -3,10 +3,12 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import {
   getWalletSolBalance,
   getVaultSolBalance,
-  getUserData
-} from "../contracts/bean"
+  getUserData,
+} from "../contracts/bean";
 
 export const ContractContext = createContext({
+  isLoading: false,
+  setIsLoading: (arg) => {},
   minersCount: 0,
   beanRewards: 0,
   walletSolBalance: 0,
@@ -15,6 +17,7 @@ export const ContractContext = createContext({
 });
 
 export const ContractProvider = ({ children }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [minersCount, setMinersCount] = useState(0);
   const [beanRewards, setBeanRewards] = useState(0);
   const [walletSolBalance, setWalletSolBalance] = useState("0");
@@ -23,13 +26,13 @@ export const ContractProvider = ({ children }) => {
 
   const wallet = useWallet();
   useEffect(() => {
-    getWalletSolBalance(wallet).then(bal => {
+    getWalletSolBalance(wallet).then((bal) => {
       console.log("getWalletSolBalance bal=", bal);
       setWalletSolBalance(bal);
     });
-    getUserData(wallet).then(data => {
+    getUserData(wallet).then((data) => {
       if (data !== null) {
-        console.log('userData =', data);
+        console.log("userData =", data);
         setBeanRewards(data.beanRewards);
         setMinersCount(data.miners);
       }
@@ -37,19 +40,21 @@ export const ContractProvider = ({ children }) => {
   }, [wallet]);
 
   useEffect(() => {
-    getVaultSolBalance(wallet).then(bal => {
+    getVaultSolBalance(wallet).then((bal) => {
       setContractSolBalance(bal);
     });
   }, [wallet, dataUpdate]);
 
   return (
     <ContractContext.Provider
-      value={{ 
+      value={{
+        isLoading,
+        setIsLoading: (arg) => setIsLoading(arg),
         minersCount,
         beanRewards,
         walletSolBalance,
         contractSolBalance,
-        toggleDataUpdate: () => setDataUpdate(!dataUpdate)
+        toggleDataUpdate: () => setDataUpdate(!dataUpdate),
       }}
     >
       {children}
@@ -58,4 +63,3 @@ export const ContractProvider = ({ children }) => {
 };
 
 export const useContractContext = () => useContext(ContractContext);
-

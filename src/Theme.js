@@ -13,7 +13,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: "Montserrat",
+    // fontFamily: "Montserrat",
     body1: {
       fontSize: 20,
     },
@@ -36,7 +36,7 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: "6px 6px 20px 6px #00000096",
+          boxShadow: "none",
           borderRadius: 20,
         },
       },
@@ -51,11 +51,12 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
+          color: "black",
           borderRadius: 8,
-          fontWeight: 400,
+          fontWeight: 550,
           fontSize: "1.2rem",
           padding: "10px",
-          minWidth: 138,
+          minWidth: 120,
         },
         contained: {
           ":hover": {
@@ -64,6 +65,11 @@ const theme = createTheme({
         },
         containedSecondary: {
           color: "#17215E",
+        },
+        outlined: {
+          border: "2px solid black",
+          borderRadius: 0,
+          background: "white",
         },
       },
     },
